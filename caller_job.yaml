@@ -1,10 +1,48 @@
 ---
-- hosts: all
-  gather_facts: no
+- name: Survey Caller Playbook
+  hosts: localhost
+  gather_facts: False
+
+  vars:
+    called_job_template_id: 85
+    controller_host: "vm249-230.gsslab.pnq2.redhat.com"
+    controller_user_id: 1
+    controller_username: 'admin'
+    controller_password: 'redhat'
 
   tasks:
-    - name: Check PID of existing Java process
-      shell: "ps -ef | grep [j]ava"
-      register: java_status
+    - name: show survey_input
+      debug:
+        var: survey_input
 
-    - debug: var=java_status.stdout
+    - name: login to Controller
+      ansible.builtin.uri:
+        url: "https://{{ controller_host }}/api/v2/users/{{ controller_user_id }}/personal_tokens/"
+        method: POST
+        validate_certs: False
+        return_content: True
+        force_basic_auth: True
+        user: "{{ controller_username }}"
+        password: "{{ controller_password }}"
+        status_code: 201
+      delegate_to: localhost
+      run_once: True
+      register: login_response
+
+    - name: call the target Job Template and pass the survey_input
+      ansible.builtin.uri:
+        url: "https://{{ controller_host }}/api/v2/job_templates/{{ called_job_template_id }}/launch/"
+        method: POST
+        validate_certs: False
+        return_content: True
+        headers:
+          Authorization: "Bearer {{ login_response['json']['token'] }}"
+          Content-Type: "application/json"
+        status_code: 201
+        body:
+          survey_enabled: True
+          extra_vars:
+            passed_survey_input: "{{ survey_input }}"
+        body_format: json
+      delegate_to: localhost
+      register: job_template_response
