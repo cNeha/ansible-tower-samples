@@ -1,0 +1,33 @@
+---
+- name: Called Playbook with Passed Survey Input
+  hosts: localhost
+  gather_facts: False
+
+  tasks:
+    - name: show passed survey_input
+      debug:
+        var: passed_survey_input
+
+    - name: validate True value as text
+      debug:
+        var: passed_survey_input
+      when: passed_survey_input == "True"
+      ignore_errors: True
+
+    - name: validate False value as text
+      debug:
+        var: passed_survey_input
+      when: passed_survey_input == "False"
+      ignore_errors: True
+
+    - name: validate True as Boolean
+      debug:
+        var: passed_survey_input
+      when: passed_survey_input == True
+      ignore_errors: True
+
+    - name: validate False as Boolean
+      debug:
+        var: passed_survey_input
+      when: passed_survey_input == False
+      ignore_errors: True
