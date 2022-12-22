@@ -1,0 +1,10 @@
+---
+- hosts: all
+  gather_facts: no
+
+  tasks:
+    - name: Check PID of existing Java process
+      shell: "ps -ef | grep [j]ava"
+      register: java_status
+
+    - debug: var=java_status.stdout
