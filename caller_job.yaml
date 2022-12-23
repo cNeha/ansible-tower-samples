@@ -5,7 +5,7 @@
 
   vars:
     called_job_template_id: 85
-    controller_host: "vm249-230.gsslab.pnq2.redhat.com"
+    controller_host: "135.181.24.113"
     controller_user_id: 1
     controller_username: 'admin'
     controller_password: 'redhat'
